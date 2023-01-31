@@ -16,7 +16,7 @@ class Actor(models.Model):
 
 class Movie(models.Model):
 
-    movie_name = models.CharField(db_column="movie_name", max_length=256,
+    name = models.CharField(db_column="name", max_length=256,
                                   null=False, blank=False, db_index=True)
     duration_in_min = models.FloatField(db_column='duration', null=False)
     release_year = models.IntegerField(
@@ -24,9 +24,10 @@ class Movie(models.Model):
         validators=[MinValueValidator(1900), MaxValueValidator(2050)])
     pic_url = models.URLField(max_length=512, db_column='pic_url', null=True, blank=True)
     actors = models.ManyToManyField(Actor, through='MovieActor')
+    description = models.TextField(db_column='description', null=False)
 
     def __str__(self):
-        return self.movie_name
+        return self.name
 
 
     class Meta:
@@ -40,7 +41,7 @@ class MovieActor(models.Model):
     main_role = models.BooleanField(null=False, blank=False)
 
     def __str__(self):
-        return f"{self.actor.name} in movie {self.movie.movie_name}"
+        return f"{self.actor.name} in movie {self.movie.name}"
 
 
     class Meta:
@@ -52,6 +53,7 @@ class Rating(models.Model):
     movie = models.ForeignKey("Movie", on_delete=models.RESTRICT)
     rating = models.SmallIntegerField(db_column='rating', null=False, blank=False,
                                       validators=[MinValueValidator(0), MaxValueValidator(11)])
+    rating_date = models.DateField(db_column='rating_date', null=False, auto_now_add=True)
 
 
     def __str__(self):

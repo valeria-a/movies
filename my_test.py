@@ -8,13 +8,13 @@ django.setup()
 
 from movies_app.models import Movie, Rating
 
-# new_movie = Movie(movie_name="ccc", release_year=2021, duration_in_min=14)
+# new_movie = Movie(name="ccc", release_year=2021, duration_in_min=14)
 # new_movie.save()
-# new_movie = Movie(movie_name="ddd", release_year=2021, duration_in_min=14)
+# new_movie = Movie(name="ddd", release_year=2021, duration_in_min=14)
 # new_movie.save()
-# new_movie = Movie(movie_name="eee", release_year=2021, duration_in_min=14)
+# new_movie = Movie(name="eee", release_year=2021, duration_in_min=14)
 # new_movie.save()
-# new_movie = Movie(movie_name="fff", release_year=2021, duration_in_min=14)
+# new_movie = Movie(name="fff", release_year=2021, duration_in_min=14)
 # new_movie.save()
 
 
@@ -49,7 +49,7 @@ from movies_app.models import Movie, Rating
 # Movie.objetcs.filter()
 # m = Movie.objects.get(duration_in_min=14)
 
-# movies_qs = Movie.objects.all().values_list('movie_name', 'duration_in_min')
+# movies_qs = Movie.objects.all().values_list('name', 'duration_in_min')
 # print(movies_qs.query)
 # movies_qs = movies_qs.filter(release_year__gt=2020)
 # print(movies_qs.query)
@@ -74,6 +74,6 @@ if filter_by_year:
 if filter_by_min:
     m = m.filter(duration_in_min=filter_by_min)
 if name_to_filter:
-    m = m.filter(movie_name__iexact=name_to_filter)
+    m = m.filter(name__iexact=name_to_filter)
 
 print(m.query)
