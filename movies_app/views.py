@@ -1,6 +1,8 @@
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.request import Request
 from rest_framework.response import Response
 
 from movies_app.models import *
@@ -9,8 +11,7 @@ from movies_app.serializers import *
 
 # Create your views here.
 
-@api_view(['GET'])
-def movies_list(request):
+def get_movies_list(request):
     movies_qs = Movie.objects.all()
 
     if 'name' in request.query_params:
@@ -29,6 +30,17 @@ def movies_list(request):
     return Response(serializer.data)
 
 
+@api_view(['GET', 'POST'])
+def movies_list(request):
+    if request.method == 'GET':
+        return get_movies_list(request)
+    elif request.method == 'POST':
+        serializer = MovieDetailsSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.create(serializer.validated_data)
+            return Response(status=status.HTTP_201_CREATED)
+
+
 # @api_view(['GET'])
 # def movie_details(request, movie_id: int):
 #     try:
@@ -39,9 +51,29 @@ def movies_list(request):
 #         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(['GET'])
-def movie_details(request, movie_id: int):
+@api_view(['GET', 'PATCH'])
+def movie_details(request: Request, movie_id: int):
     movie = get_object_or_404(Movie, id=movie_id)
-    serializer = MovieDetailsSerializer(movie, many=False)
-    return Response(serializer.data)
 
+    if request.method == 'GET':
+        serializer = MovieDetailsSerializer(movie, many=False)
+        return Response(serializer.data)
+    elif request.method == 'PATCH':
+        serializer = MovieDetailsSerializer(
+            movie, data=request.data, many=False, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(status=status.HTTP_200_OK)
+@api_view(['GET', 'POST'])
+def movie_actors(request, movie_id):
+    if request.method == 'GET':
+        movie_actors = MovieActor.objects.filter(movie_id=movie_id)
+        serializer = MovieActorSerializer(movie_actors, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        get_object_or_404(Movie, id=movie_id)
+        serializer = AddMovieActorSerializer(data=request.data,
+                                             context={'movie_id': movie_id, 'request': request})
+        if serializer.is_valid(raise_exception=True):
+            serializer.create(serializer.validated_data)
+            return Response()
