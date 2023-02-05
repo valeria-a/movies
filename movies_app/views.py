@@ -77,3 +77,7 @@ def movie_actors(request, movie_id):
         if serializer.is_valid(raise_exception=True):
             serializer.create(serializer.validated_data)
             return Response()
+
+
+def index(request):
+    return render(request, 'static/index.html')
